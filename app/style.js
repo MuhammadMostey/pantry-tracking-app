@@ -25,8 +25,6 @@ const homeStyles = {
   },
   boxBody: {
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     overflow: "auto",
     height: "300px",
     width: "800px",
@@ -35,13 +33,19 @@ const homeStyles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "300px",
+    minHeight: "150px",
     width: "100%",
     backgroundColor: "#f0f0f0",
   },
   itemText: {
     color: "#333",
     textAlign: "center",
+  },
+  loading: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
   },
 };
 
