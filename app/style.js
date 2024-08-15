@@ -20,8 +20,8 @@ export const homeStyles = (theme) => {
     },
     addButtonContainer: {
       position: "absolute",
-      bottom: "1rem",
-      right: "1rem",
+      bottom: "0.75rem",
+      right: "6rem",
       zIndex: 10,
       [theme.breakpoints.down("md")]: {
         // Tablets and below
