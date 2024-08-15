@@ -69,6 +69,18 @@ export default function Home() {
     setOpen(false);
   };
 
+  // used to get data from form and update db
+  const [itemName, setItemName] = useState("");
+  const addItem = async (item) => {
+    await setDoc(doc(db, "pantry", item), {});
+    console.log(item);
+  };
+
+  // used to delete an item from the db
+  const removeItem = async (item) => {
+    await deleteDoc(doc(db, "pantry", item));
+  };
+
   return (
     <Box sx={classes.main}>
       <IconButton
@@ -126,6 +138,14 @@ export default function Home() {
                   <Typography sx={classes.itemText} variant={"h3"}>
                     {i.charAt(0).toUpperCase() + i.slice(1)}
                   </Typography>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      removeItem(i);
+                    }}
+                  >
+                    remove
+                  </Button>
                 </Box>
               ))
             )}
