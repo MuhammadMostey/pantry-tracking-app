@@ -35,11 +35,16 @@ import {
 
 let items = ["potato", "tomato", "tomato", "tomato", "tomato", "tomato"];
 
+// formating numbers for quanitity field
+const formatNumber = (number) => {
+  return new Intl.NumberFormat().format(number);
+};
+
 export default function Home() {
   const classes = homeStyles;
 
   // used to update client with retrived data from db
-  const [pantryItems, setPantryItems] = useState([]);
+  const [pantryItems, setPantryItems] = useState([{}]);
   const [loading, setLoading] = useState(true);
 
   // getting data from the da tabase
@@ -49,9 +54,11 @@ export default function Home() {
       const unsubscribe = onSnapshot(q, (docs) => {
         const pantryList = [];
         docs.forEach((doc) => {
-          pantryList.push(doc.id);
+          const data = doc.data();
+          pantryList.push({ name: doc.id, quantity: data.quantity });
         });
         setPantryItems(pantryList);
+        console.log(pantryList);
         setLoading(false);
       });
       return unsubscribe;
@@ -71,8 +78,21 @@ export default function Home() {
 
   // used to get data from form and update db
   const [itemName, setItemName] = useState("");
-  const addItem = async (item) => {
-    await setDoc(doc(db, "pantry", item), {});
+  const [error, setError] = useState("");
+  const addItem = async (item, quantity) => {
+    if (item.trim() === "" || quantity <= 0) {
+      setError("Item name cannot be empty and quantity must be at least 1.");
+      return; // Exit the function early
+    }
+
+    try {
+      await setDoc(doc(db, "pantry", item), { quantity });
+      setError("");
+      setItemName("");
+      setQuantity(1);
+    } catch (error) {
+      setError("Failed to add item. Please try again.");
+    }
     console.log(item);
   };
 
@@ -80,6 +100,9 @@ export default function Home() {
   const removeItem = async (item) => {
     await deleteDoc(doc(db, "pantry", item));
   };
+
+  // quantity of items
+  const [quantity, setQuantity] = useState(1);
 
   return (
     <Box sx={classes.main}>
@@ -110,15 +133,33 @@ export default function Home() {
                 setItemName(e.target.value);
               }}
             />
+            <TextField
+              variant="outlined"
+              placeholder="quantity"
+              label="Quantity"
+              type="number"
+              required
+              sx={classes.modalFormInput}
+              value={quantity}
+              onChange={(e) => {
+                setQuantity(e.target.value);
+              }}
+            />
             <Button
               variant="outlined"
               onClick={() => {
-                addItem(itemName);
-                setItemName("");
+                addItem(itemName, quantity);
               }}
             >
               Add
             </Button>
+          </Box>
+          <Box>
+            {error && (
+              <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                {error}
+              </Typography>
+            )}
           </Box>
         </Box>
       </Modal>
@@ -133,15 +174,20 @@ export default function Home() {
             {loading ? (
               <Box sx={classes.loading}>loading..</Box>
             ) : (
-              pantryItems.map((i) => (
-                <Box sx={classes.itemBox} key={i} paddingX={5}>
-                  <Typography sx={classes.itemText} variant={"h3"}>
-                    {i.charAt(0).toUpperCase() + i.slice(1)}
+              pantryItems.map((object, index) => (
+                <Box sx={classes.itemBox} key={index} paddingX={5}>
+                  <Typography sx={classes.itemText} variant={"h4"}>
+                    {object.name.charAt(0).toUpperCase() + object.name.slice(1)}
                   </Typography>
+
+                  <Typography sx={classes.itemText} variant={"h6"}>
+                    Quantity: {formatNumber(object.quantity)}
+                  </Typography>
+
                   <Button
                     variant="contained"
                     onClick={() => {
-                      removeItem(i);
+                      removeItem(object.name);
                     }}
                   >
                     remove
