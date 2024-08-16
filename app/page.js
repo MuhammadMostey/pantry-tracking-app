@@ -12,7 +12,6 @@ import {
   Button,
   TextField,
 } from "@mui/material";
-import { useStyle } from "@mui/material/styles";
 import { homeStyles } from "./style";
 import { useTheme } from "@mui/material/styles";
 
@@ -23,18 +22,16 @@ import AddIcon from "@mui/icons-material/Add";
 import { db } from "../firebase";
 import {
   getDoc,
-  getDocs,
   collection,
-  firestore,
   query,
   onSnapshot,
-  addDoc,
   doc,
   setDoc,
   deleteDoc,
 } from "firebase/firestore";
 
 
+// temp data for pupluation
 let items = ["potato", "tomato", "tomato", "tomato", "tomato", "tomato"];
 
 // formating numbers for quanitity field
@@ -119,6 +116,13 @@ export default function Home() {
   // quantity of items
   const [quantity, setQuantity] = useState(1);
 
+  // State for the search query
+  const [searchQuery, setSearchQuery] = useState("");
+  const filteredItems = pantryItems.filter(
+    (item) =>
+      item.name && item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Box sx={classes.main}>
       <Box sx={classes.addButtonContainer}>
@@ -187,11 +191,21 @@ export default function Home() {
           </Typography>
         </Box>
 
+        {/* Search Bar */}
+        <TextField
+          variant="outlined"
+          placeholder="Search by item ID"
+          label="Search"
+          sx={{ marginBottom: "1rem", padding: 1, width: "40%" }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+
         <Stack sx={classes.boxBody} spacing={2}>
           {loading ? (
             <Box sx={classes.loading}>loading..</Box>
           ) : (
-            pantryItems.map((object, index) => (
+            filteredItems.map((object, index) => (
               <Box sx={classes.itemBox} key={index} paddingX={5}>
                 <Typography sx={classes.itemText} variant={"h5"}>
                   {object.name.charAt(0).toUpperCase() + object.name.slice(1)}
