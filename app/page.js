@@ -1,6 +1,6 @@
 "use client";
 // react
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 // mui
 import {
@@ -11,13 +11,14 @@ import {
   Modal,
   Button,
   TextField,
+  useMediaQuery,
 } from "@mui/material";
 import { homeStyles } from "./style";
 import { useTheme } from "@mui/material/styles";
 
 // mui icons
 import AddIcon from "@mui/icons-material/Add";
-
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 // firebase
 import { db } from "../firebase";
 import {
@@ -30,6 +31,8 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
+// cam
+import { Camera } from "react-camera-pro";
 
 // temp data for pupluation
 let items = ["potato", "tomato", "tomato", "tomato", "tomato", "tomato"];
@@ -123,20 +126,91 @@ export default function Home() {
       item.name && item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // cam
+  const [image, setImage] = useState(null);
+  const [camOpen, setCamOpen] = useState(false);
+
+  const camera = useRef(null);
+
+  const handleCamOpen = () => {
+    setCamOpen(true);
+  };
+
+  const handleCamClose = () => {
+    setCamOpen(false);
+  };
+  const handleTakePhoto = () => {
+    // /setImage(camera.current.takePhoto())
+    if (camera.current) {
+      const takenPhoto = camera.current.takePhoto();
+      setImage(takenPhoto);
+    }
+  };
+
+  // screen sizes
+  const isMobile = useMediaQuery("(max-width: 600px)");
+
   return (
     <Box sx={classes.main}>
       <Box sx={classes.addButtonContainer}>
-        <IconButton
-          aria-label="add"
-          size="large"
-          variant="outlined"
-          color="error"
+        <Button
           onClick={handleOpen}
-          sx={classes.addButton}
+          variant="outlined"
+          size="large"
+          aria-label="add"
+          color="error"
         >
           <AddIcon size="small" />
-        </IconButton>
+        </Button>
       </Box>
+      {/** camera button */}
+      <Box sx={classes.camButtonContainer}>
+        <Button
+          variant="contained"
+          onClick={handleCamOpen}
+          size="large"
+          aria-label="cam"
+          color="primary"
+        >
+          <CameraAltIcon size="small" />
+        </Button>
+      </Box>
+
+      {/** Camera Modal */}
+      <Modal open={camOpen} onClose={handleCamClose}>
+        <Box sx={classes.camModal} spacing={3}>
+          {isMobile ? (
+            <Camera ref={camera} aspectRatio={9 / 16} />
+          ) : (
+            <Camera ref={camera} aspectRatio={16 / 9} />
+          )}
+
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleTakePhoto}
+            sx={{
+              width: "12rem",
+              height: "2rem",
+              fontSize: "small",
+              justifySelf: "center",
+            }}
+          >
+            Take Photo
+          </Button>
+          <Box>
+            {isMobile
+              ? image && (
+                  <>
+                    <h3> Taken Photo </h3>
+                    <img src={image} alt="Taken photo" width={"100%"} />
+                  </>
+                )
+              : image && <img src={image} alt="Taken photo" width={"95%"} />}
+          </Box>
+        </Box>
+      </Modal>
+
       {/**Active */}
       <Modal open={open} onClose={handleClose}>
         <Box sx={classes.modal} spacing={3}>
