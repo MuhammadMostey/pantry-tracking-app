@@ -26,12 +26,49 @@ export const homeStyles = (theme) => {
       [theme.breakpoints.down("md")]: {
         // Tablets and below
         bottom: "1rem",
-        right: "0.5rem",
+        right: "1rem",
       },
       [theme.breakpoints.down("sm")]: {
         // Mobile phones
         bottom: "1rem",
-        right: "0.5rem",
+        right: "1rem",
+      },
+    },
+    camButtonContainer: {
+      position: "absolute",
+      bottom: "4rem",
+      right: "6rem",
+      zIndex: 10,
+      [theme.breakpoints.down("md")]: {
+        // Tablets and below
+        bottom: "4rem",
+        right: "1rem",
+      },
+      [theme.breakpoints.down("sm")]: {
+        // Mobile phones
+        bottom: "4rem",
+        right: "1rem",
+      },
+    },
+    camModal: {
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "80%",
+      height: "90%",
+      bgcolor: "background.paper",
+      borderRadius: 1,
+      boxShadow: 24,
+      p: 2,
+      display: "flex",
+      // justifyContent: "space-between",
+      flexDirection: "row",
+      gap: 3,
+      overflow: "auto",
+      [theme.breakpoints.down("sm")]: {
+        width: "85%",
+        flexDirection: "column",
       },
     },
     addButton: {
